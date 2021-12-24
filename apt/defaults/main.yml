@@ -1,0 +1,17 @@
+---
+# defaults file for apt
+# Generic Variables
+app_name: adoptopenjdk-15-hotspot
+desired_state: present
+
+pre_reqs_debian:
+  - apt-transport-https
+  - wget
+  - gnupg
+
+# Debian Family Variables
+
+repo_debian_gpg_key: https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
+repo_debian: "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb {{ ansible_lsb['codename'] }} main"
+repo_debian_filename: "{{ app_name }}"
+

@@ -1,0 +1,38 @@
+---
+# tasks file for apt
+- name: Debian/Ubuntu Family | Install python3-apt
+  apt:
+    name: python3-apt
+    state: present
+    force_apt_get: yes
+    update_cache: yes
+
+- name: Installing some pre reqs 
+  apt:
+    name: "{{ pre_reqs_debian }}"
+    state: present
+    force_apt_get: yes
+
+- name: Add gpg signing key for {{ app_name }}
+  apt_key:
+    url: "{{ repo_debian_gpg_key }}"
+    state: present
+
+- name: Adding repository {{ repo_debian }}
+  apt_repository:
+    repo: "{{ repo_debian }}"
+    codename: "{{ ansible_lsb['codename'] }}"
+    filename: "{{ repo_debian_filename }}"
+    state: present
+    update_cache: yes
+
+- name: Installing {{ app_name }}
+  apt:
+    name: "{{ app_name }}"
+    state: present
+    force_apt_get: yes
+    update_cache: yes
+
+- name: debug
+  debug:
+    msg: "{{ ansible_lsb['codename'] }}"
