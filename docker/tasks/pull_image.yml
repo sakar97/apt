@@ -1,0 +1,28 @@
+---
+    - name: pull postgress image
+      docker_image:
+         name: postgres:11.11
+         source: pull
+
+    - name: "Creating multiple folders"
+      file:
+       path: "{{item}}"
+       state: directory
+       mode: 0755
+       group: root
+       owner: root
+      with_items:
+      - "/root/mnt/transactions_build"
+
+    - name: create docker container
+      docker_container:
+         name: postgres11
+         image: postgres:11.11
+         volumes:
+           - "/mnt/transactions_build:/var/lib/postgresql/data"
+         ports:
+           - "5432:5432"
+         env:
+            POSTGRES_PASSWORD: "postgres"
+         state: started
+         detach: yes

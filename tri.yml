@@ -4,8 +4,18 @@
    pre_tasks:
       - name: Installing unzip for Ubuntu
         apt:
-          name: unzip
+          name: "{{item}}"
           state: latest
+        with_items:
+            - unzip
+            - postgresql-client-common
+            - gnupg
+      - name: install docker-py
+        pip:
+          name: docker-py
    roles:
     #- apt
-    - gradle
+#    - gradle
+    - name: docker
+      sudo: true
+

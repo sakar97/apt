@@ -1,0 +1,24 @@
+---
+- name: get postgresql apt key
+  become: true
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: add apt repo
+  become: true
+  apt_repository:
+    codename: "{{ ansible_lsb['codename'] }}"
+    repo: deb http://apt.postgresql.org/pub/repos/apt {{ ansible_lsb['codename'] }}-pgdg main
+
+- name: update system
+  command: sudo apt update -y
+
+- name: postgres | install client packages
+  become: true
+  apt:
+    name: postgresql-client-11
+    state: present
+
+- name: upgrade OS
+  command: sudo apt upgrade -y
