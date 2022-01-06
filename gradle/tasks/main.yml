@@ -1,0 +1,67 @@
+---
+# tasks file for gradl
+  - name: Download Gradle zip file to tmp directory
+    ansible.builtin.get_url:
+     url: "{{ gradle_url }}"
+     dest:  "{{ tmp_dir }}"
+
+  - name: Create directory for gradle
+    ansible.builtin.file:
+     path: "{{ gradle_directory }}"
+     state: directory
+     mode: '0755'
+     
+  - name: Retrieve and extract gradle zip file
+    unarchive:
+     src: /tmp/gradle-6.8.3-bin.zip
+     dest: "{{ gradle_directory }}"
+     remote_src: yes
+
+  - name: Remove zip file from /tmp
+    ansible.builtin.file:
+     path: /tmp/gradle-6.8.3-bin.zip
+     state: absent
+
+ # - name: Create directory for gradle
+  #  ansible.builtin.file:
+   #  path: /etc/profile.d/gradle.sh
+  #   state: directory
+  #   mode: '0755'
+
+  - name: Create file for gradle
+    ansible.builtin.file:
+     path: /etc/profile.d/gradle.sh
+     state: touch
+     mode: '0644'
+
+  - name: updating profile file
+    ansible.builtin.lineinfile:
+     path: ~/.profile
+     line: "{{ item }}"
+    with_items:
+       - 'export GRADLE_HOME=/opt/gradle/gradle-6.8.3'
+       - 'export PATH=/opt/gradle/gradle-6.8.3/bin:$PATH'
+
+  - name: updating bashrc file
+    ansible.builtin.lineinfile:
+     path: ~/.bashrc
+     insertafter: "EOF"
+     line: "{{ item }}"
+    with_items:                                              
+      - 'export GRADLE_HOME=/opt/gradle/gradle-6.8.3'
+      - 'export PATH=/opt/gradle/gradle-6.8.3/bin:$PATH'
+     
+  - name: Load Source file
+    become: true
+    shell: >- 
+       source ~/.profile ~/.bashrc
+    args:
+     executable: /bin/bash
+
+  - name: Execute task with PATH
+    shell: gradle --version
+    register: env_output
+
+  - name: debug register
+    debug:
+      msg: "{{ env_output }}"

@@ -1,5 +1,11 @@
 ---
  - hosts: localhost
    become: yes
+   pre_tasks:
+      - name: Installing unzip for Ubuntu
+        apt:
+          name: unzip
+          state: latest
    roles:
-    - apt
+    #- apt
+    - gradle
